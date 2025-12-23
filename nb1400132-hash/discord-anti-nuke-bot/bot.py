@@ -1,11 +1,10 @@
 import discord
 from discord.ext import commands
-import os
 import asyncio
-from dotenv import load_dotenv
 from utils.database import Database
 
-load_dotenv()
+TOKEN = 'YOUR_BOT_TOKEN_HERE'
+APPLICATION_ID = None
 
 intents = discord.Intents.all()
 
@@ -14,7 +13,7 @@ class AntiNukeBot(commands.Bot):
         super().__init__(
             command_prefix="!",
             intents=intents,
-            application_id=os.getenv('APPLICATION_ID')
+            application_id=APPLICATION_ID
         )
         self.db = Database()
         
@@ -59,8 +58,7 @@ class AntiNukeBot(commands.Bot):
 bot = AntiNukeBot()
 
 if __name__ == '__main__':
-    token = os.getenv('TOKEN')
-    if not token:
-        print('Error: No token provided in .env file')
+    if not TOKEN or TOKEN == 'YOUR_BOT_TOKEN_HERE':
+        print('Error: Please set your bot token in bot.py (TOKEN variable)')
     else:
-        bot.run(token)
+        bot.run(TOKEN)
