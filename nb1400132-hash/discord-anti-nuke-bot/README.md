@@ -14,11 +14,13 @@ A powerful Discord anti-nuke bot built with discord.py that prevents server raid
 - **Server Protection**: Monitors server settings changes
 
 ### ⚙️ Flexible Configuration
-- **Custom Limits**: Set different limits for each action type (1 to infinity)
+- **Custom Limits**: Set different limits for each action type (0 to infinity)
+  - Setting limit to 0 = instant punishment for any action
 - **Time Windows**: Configure action timeframes (seconds, minutes, hours, days, weeks, months, years)
 - **Multiple Punishments**: Choose from ban, kick, role removal, timeout, or warn
 - **Whitelist System**: Exempt trusted users from all punishments
 - **Admin System**: Grant users permission to modify anti-nuke settings
+- **Backup System**: Save and restore complete server state (channels, roles, emojis, settings)
 
 ### 🎯 Smart Detection
 - Tracks actions in real-time using audit logs
@@ -26,6 +28,14 @@ A powerful Discord anti-nuke bot built with discord.py that prevents server raid
 - Automatic cleanup of old action logs
 - Detects bot additions and tracks who added them
 - Identifies dangerous permission grants (administrator, ban, kick, etc.)
+
+### 💾 Server Backup & Recovery
+- **Complete Backup**: Save entire server state with one command
+- **Instant Restore**: Restore server from backup after a nuke attack
+- **Smart Overwrite**: Warns before overwriting existing backups
+- **Confirmation System**: Requires double confirmation for destructive operations
+- **Progress Tracking**: Shows real-time progress during restoration
+- **Unique Identification**: Each backup is tied to specific server ID
 
 ### 🔄 Advanced Revert System
 - **Auto-Restore Channels**: Recreates deleted channels with original permissions, position, and settings
@@ -91,6 +101,37 @@ Grant a user permission to modify anti-nuke settings.
 - **Parameters:**
   - `user`: User mention, ID, or username
 - **Example:** `/addadmin user:@ModeratorName`
+
+### Backup Commands (Owner/Admin)
+
+#### `/saveserversettings`
+Save complete server backup (channels, roles, emojis, settings).
+- **What it saves:**
+  - All channels with permissions, settings, and positions
+  - All roles with permissions, colors, and positions
+  - All emojis
+  - Server name, vanity URL, description
+- **Features:**
+  - Only 1 save per server (overwrites previous)
+  - Confirmation required when overwriting
+  - Only owner and admins can use
+- **Example:** `/saveserversettings`
+
+#### `/loadfromsave`
+Restore server from backup (WARNING: Deletes all current content first).
+- **What it does:**
+  1. Deletes all current channels and roles
+  2. Restores server name and vanity URL
+  3. Recreates all roles with exact permissions
+  4. Recreates all channels with exact permissions
+  5. Restores categories and channel positions
+- **Features:**
+  - Requires confirmation (run twice within 60 seconds)
+  - Only works with backup for that specific server
+  - Shows progress for each restoration step
+  - Only owner and admins can use
+- **Use case:** Quickly restore server after a nuke attack
+- **Example:** `/loadfromsave`
 
 ## Monitored Actions
 
@@ -224,6 +265,8 @@ The bot is built with a modular cog system:
 - `cogs/whitelist.py` - Whitelist management command
 - `cogs/unwhitelist.py` - Whitelist removal command
 - `cogs/addadmin.py` - Admin management command
+- `cogs/saveserversettings.py` - Server backup command with overwrite confirmation
+- `cogs/loadfromsave.py` - Server restore command with double confirmation
 - `cogs/protection.py` - Core protection system with event listeners, state caching, and revert logic
 
 ## Security Features

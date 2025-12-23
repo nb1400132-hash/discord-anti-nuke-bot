@@ -28,6 +28,8 @@ class AntiNukeBot(commands.Bot):
             'cogs.whitelist',
             'cogs.unwhitelist',
             'cogs.addadmin',
+            'cogs.saveserversettings',
+            'cogs.loadfromsave',
             'cogs.protection'
         ]
         
