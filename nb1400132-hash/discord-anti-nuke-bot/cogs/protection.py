@@ -209,7 +209,7 @@ class Protection(commands.Cog):
         
         action_count = await self.bot.db.get_recent_actions(guild.id, user.id, action, since_time)
         
-        if action_count > limit:
+        if action_count > limit or limit == 0:
             can_punish = self.can_punish_user(guild, user)
             
             if can_punish:

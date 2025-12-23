@@ -71,6 +71,14 @@ class Database:
                 )
             ''')
             
+            await db.execute('''
+                CREATE TABLE IF NOT EXISTS server_backups (
+                    guild_id INTEGER PRIMARY KEY,
+                    backup_data TEXT,
+                    timestamp INTEGER
+                )
+            ''')
+            
             await db.commit()
     
     async def set_limit(self, guild_id: int, action: str, limit: int):
@@ -205,3 +213,28 @@ class Database:
             ) as cursor:
                 result = await cursor.fetchone()
                 return result[0] if result else None
+    
+    async def save_server_backup(self, guild_id: int, backup_data: str, timestamp: int):
+        async with aiosqlite.connect(self.db_path) as db:
+            await db.execute(
+                'INSERT OR REPLACE INTO server_backups (guild_id, backup_data, timestamp) VALUES (?, ?, ?)',
+                (guild_id, backup_data, timestamp)
+            )
+            await db.commit()
+    
+    async def get_server_backup(self, guild_id: int):
+        async with aiosqlite.connect(self.db_path) as db:
+            async with db.execute(
+                'SELECT backup_data, timestamp FROM server_backups WHERE guild_id = ?',
+                (guild_id,)
+            ) as cursor:
+                result = await cursor.fetchone()
+                return result if result else None
+    
+    async def has_server_backup(self, guild_id: int):
+        async with aiosqlite.connect(self.db_path) as db:
+            async with db.execute(
+                'SELECT 1 FROM server_backups WHERE guild_id = ?',
+                (guild_id,)
+            ) as cursor:
+                return await cursor.fetchone() is not None

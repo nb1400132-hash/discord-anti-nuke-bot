@@ -33,10 +33,10 @@ class SetLimit(commands.Cog):
     ])
     @is_owner_or_admin()
     async def setlimit(self, interaction: discord.Interaction, action: str, limit: int):
-        if limit < 1:
+        if limit < 0:
             embed = discord.Embed(
                 title="❌ Invalid Limit",
-                description="Limit must be at least 1.",
+                description="Limit must be at least 0.\n\n**Note:** Setting limit to 0 will instantly punish any user who performs this action.",
                 color=0xff0000
             )
             await interaction.response.send_message(embed=embed, ephemeral=True)
@@ -52,7 +52,9 @@ class SetLimit(commands.Cog):
             color=0x00ff00
         )
         embed.add_field(name="Action", value=action_name, inline=True)
-        embed.add_field(name="Limit", value=f"{limit}", inline=True)
+        embed.add_field(name="Limit", value=f"{limit}" + (" (Instant Punishment)" if limit == 0 else ""), inline=True)
+        if limit == 0:
+            embed.add_field(name="⚠️ Warning", value="Any user performing this action will be instantly punished!", inline=False)
         embed.set_footer(text=f"Set by {interaction.user}")
         
         await interaction.response.send_message(embed=embed)
