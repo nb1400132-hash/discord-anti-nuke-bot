@@ -181,6 +181,28 @@ The bot monitors and can limit the following actions:
    python bot.py
    ```
 
+## Database
+
+The bot uses **SQLite database files** (`.db`) for persistent data storage:
+
+- **Location**: `data/antinuke.db`
+- **Auto-created**: Database file is automatically created on first run
+- **Tables**:
+  - `limits` - Action limits per guild
+  - `timeframes` - Time windows per action
+  - `punishments` - Punishment types per action
+  - `whitelist` - Whitelisted users per guild
+  - `admins` - Admin users per guild
+  - `action_log` - Action history for rate limiting
+  - `bot_owners` - Tracks which user added each bot
+  - `server_backups` - Complete server backups (channels, roles, emojis, settings)
+- **Backup**: Database files are ignored by `.gitignore` for security
+- **Persistent**: All settings and backups survive bot restarts
+
+**Database Files**:
+- `antinuke.db` - Main database file
+- `antinuke.db-journal` - SQLite journal file (temporary, auto-managed)
+
 ## Bot Permissions
 
 The bot requires the following permissions to function properly:
@@ -281,6 +303,38 @@ The bot is built with a modular cog system:
 - **State Persistence**: Caches server state every 5 minutes to enable accurate restoration
 - **Automatic Revert**: Instantly undoes destructive actions (unbans, recreates channels/roles, restores settings)
 - **Complete Restoration**: Recreates channels and roles with exact permissions, positions, colors, and settings
+- **Database Security**: Database files (.db) are excluded from version control for security
+- **Persistent Storage**: All configurations, logs, and backups stored in SQLite database files
+
+## File Structure
+
+```
+discord-anti-nuke-bot/
+├── bot.py                          # Main bot entry point
+├── requirements.txt                # Python dependencies
+├── .env.example                    # Environment variables template
+├── .env                            # Your bot token (create this, not tracked by git)
+├── .gitignore                      # Ignores sensitive files
+├── README.md                       # Documentation
+├── data/                           # Database directory
+│   ├── .gitkeep                    # Keeps directory in git
+│   ├── antinuke.db                 # Main database file (auto-created, not tracked)
+│   └── antinuke.db-journal         # SQLite journal (auto-created, not tracked)
+├── cogs/                           # Command modules
+│   ├── setlimit.py
+│   ├── settime.py
+│   ├── setpunishment.py
+│   ├── whitelist.py
+│   ├── unwhitelist.py
+│   ├── addadmin.py
+│   ├── saveserversettings.py
+│   ├── loadfromsave.py
+│   └── protection.py
+└── utils/                          # Utility modules
+    ├── database.py                 # SQLite database handler
+    ├── checks.py                   # Permission decorators
+    └── helpers.py                  # Helper functions
+```
 
 ## License
 
