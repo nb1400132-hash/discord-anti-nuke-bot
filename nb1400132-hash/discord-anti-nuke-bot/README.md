@@ -27,6 +27,16 @@ A powerful Discord anti-nuke bot built with discord.py that prevents server raid
 - Detects bot additions and tracks who added them
 - Identifies dangerous permission grants (administrator, ban, kick, etc.)
 
+### 🔄 Advanced Revert System
+- **Auto-Restore Channels**: Recreates deleted channels with original permissions, position, and settings
+- **Auto-Delete Unauthorized Channels**: Removes channels created by nukers
+- **Auto-Restore Roles**: Recreates deleted roles with original permissions, color, and position
+- **Auto-Delete Unauthorized Roles**: Removes roles created by nukers
+- **Auto-Unban**: Unbans members who were banned by nukers exceeding limits
+- **Server Settings Revert**: Restores server name and vanity URL changes
+- **State Caching**: Automatically caches all channels and roles every 5 minutes for accurate restoration
+- **Higher-Role Protection**: Even if a bot/user has higher roles than the anti-nuke bot, it will still revert their destructive actions (channel/role deletion) to buy time for the owner
+
 ## Commands
 
 All commands use Discord's slash command system for a modern, user-friendly experience.
@@ -148,12 +158,22 @@ The bot requires the following permissions to function properly:
 
 ## How It Works
 
-1. **Action Detection**: The bot monitors server audit logs for specific actions
-2. **Rate Tracking**: Each action is logged with a timestamp
-3. **Limit Checking**: When an action occurs, the bot counts recent actions within the timeframe
-4. **Punishment**: If the count exceeds the limit, the configured punishment is applied
-5. **Whitelist Protection**: Server owner and whitelisted users are immune
-6. **Bot Protection**: When a bot is added and the limit is exceeded, both the bot and the user who added it are punished
+1. **State Caching**: Every 5 minutes, the bot caches all channels, roles, and server settings with full details (permissions, positions, colors, etc.)
+2. **Action Detection**: The bot monitors server audit logs in real-time for specific actions
+3. **Rate Tracking**: Each action is logged with a timestamp in the database
+4. **Limit Checking**: When an action occurs, the bot counts recent actions within the configured timeframe
+5. **Punishment & Revert**: If the count exceeds the limit:
+   - If the user has a lower role than the bot: Apply configured punishment (ban/kick/clear roles/timeout)
+   - If the user has a higher role than the bot: Cannot punish but will still revert destructive actions
+   - **Revert Actions**: Automatically undo destructive changes:
+     - Deleted channels → Recreated with original permissions, position, settings
+     - Created channels → Deleted immediately
+     - Deleted roles → Recreated with original permissions, color, position
+     - Created roles → Deleted immediately
+     - Banned members → Unbanned
+     - Server name/vanity changes → Reverted to previous values
+6. **Whitelist Protection**: Server owner and whitelisted users are immune to all checks
+7. **Bot Protection**: When a bot is added and the limit is exceeded, both the bot and the user who added it are punished
 
 ## Example Configuration
 
@@ -176,10 +196,19 @@ To protect against server nuking:
 ```
 
 This configuration will:
-- Ban anyone who bans more than 3 members in 1 minute
-- Ban anyone who deletes more than 5 channels in 30 seconds
+- Ban anyone who bans more than 3 members in 1 minute (and unban the victims)
+- Ban anyone who deletes more than 5 channels in 30 seconds (and recreate the deleted channels with original permissions)
 - Ban anyone who adds more than 1 bot per hour (and remove the bot)
 - Exempt TrustedModerator from all punishments
+
+**Even if a rogue admin/bot has higher roles than the anti-nuke bot**, it will still:
+- Recreate any deleted channels with full permissions
+- Delete any unauthorized created channels
+- Recreate any deleted roles
+- Delete any unauthorized created roles
+- Unban any banned members
+- Revert server name and vanity URL changes
+- Alert the server owner so they can come online and handle the situation
 
 ## Architecture
 
@@ -195,16 +224,20 @@ The bot is built with a modular cog system:
 - `cogs/whitelist.py` - Whitelist management command
 - `cogs/unwhitelist.py` - Whitelist removal command
 - `cogs/addadmin.py` - Admin management command
-- `cogs/protection.py` - Core protection system with event listeners
+- `cogs/protection.py` - Core protection system with event listeners, state caching, and revert logic
 
 ## Security Features
 
 - **Owner Immunity**: Server owner cannot be punished
 - **Whitelist System**: Trusted users can be exempted
-- **Role Hierarchy**: Bot respects role hierarchy (won't punish higher roles)
+- **Role Hierarchy Aware**: Bot respects role hierarchy (won't punish higher roles but WILL revert their destructive actions)
+- **Higher-Role Mitigation**: Even if attacker has higher role, bot will revert channel/role deletions and creations to prevent nuke damage
 - **Audit Log Based**: All detections based on official Discord audit logs
 - **No Bypass**: Permissions are checked on every command execution
 - **Bot Tracking**: Tracks which user added each bot for accountability
+- **State Persistence**: Caches server state every 5 minutes to enable accurate restoration
+- **Automatic Revert**: Instantly undoes destructive actions (unbans, recreates channels/roles, restores settings)
+- **Complete Restoration**: Recreates channels and roles with exact permissions, positions, colors, and settings
 
 ## License
 
