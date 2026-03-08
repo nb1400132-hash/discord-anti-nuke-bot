@@ -339,3 +339,6 @@ discord-anti-nuke-bot/
 ## License
 
 MIT License - Feel free to use and modify for your server protection needs.
+
+## SUPPORT
+**DM vect0rone on discord for any questions or suggestions to this project**
