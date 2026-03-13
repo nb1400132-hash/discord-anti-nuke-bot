@@ -15,7 +15,7 @@ class Database:
                 CREATE TABLE IF NOT EXISTS limits (
                     guild_id INTEGER,
                     action TEXT,
-                    limit INTEGER,
+                    action_limit INTEGER,
                     PRIMARY KEY (guild_id, action)
                 )
             ''')
@@ -87,7 +87,7 @@ class Database:
     async def set_limit(self, guild_id: int, action: str, limit: int):
         async with aiosqlite.connect(self.db_path) as db:
             await db.execute(
-                'INSERT OR REPLACE INTO limits (guild_id, action, limit) VALUES (?, ?, ?)',
+                'INSERT OR REPLACE INTO limits (guild_id, action, action_limit) VALUES (?, ?, ?)',
                 (guild_id, action, limit)
             )
             await db.commit()
@@ -95,7 +95,7 @@ class Database:
     async def get_limit(self, guild_id: int, action: str):
         async with aiosqlite.connect(self.db_path) as db:
             async with db.execute(
-                'SELECT limit FROM limits WHERE guild_id = ? AND action = ?',
+                'SELECT action_limit FROM limits WHERE guild_id = ? AND action = ?',
                 (guild_id, action)
             ) as cursor:
                 result = await cursor.fetchone()
