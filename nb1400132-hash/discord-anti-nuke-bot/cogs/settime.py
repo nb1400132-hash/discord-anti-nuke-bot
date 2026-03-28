@@ -29,7 +29,9 @@ class SetTime(commands.Cog):
         app_commands.Choice(name='Adding Bots', value='adding_bots'),
         app_commands.Choice(name='Updating Server', value='updating_server'),
         app_commands.Choice(name='Creating Webhooks', value='creating_webhooks'),
-        app_commands.Choice(name='Deleting Webhooks', value='deleting_webhooks')
+        app_commands.Choice(name='Deleting Webhooks', value='deleting_webhooks'),
+        app_commands.Choice(name='Timing Out Members', value='timing_out_members'),
+        app_commands.Choice(name='Changing Nicknames', value='changing_nicknames'),
     ])
     @is_owner_or_admin()
     async def settime(self, interaction: discord.Interaction, action: str, timeframe: str):
