@@ -60,6 +60,8 @@ class AntiNukeBot(commands.Bot):
             'cogs.invite',
             # Help
             'cogs.help',
+            # Settings
+            'cogs.antinukesettings',
         ]
 
         for cog in cogs:
@@ -90,9 +92,6 @@ bot = AntiNukeBot()
 
 if __name__ == '__main__':
     if not TOKEN or TOKEN == '':
-        print('Error: Please set your bot token in bot.py (TOKEN variable)')
-    else:
-        bot.run(TOKEN)
         print('Error: Please set your bot token in bot.py (TOKEN variable)')
     else:
         bot.run(TOKEN)
